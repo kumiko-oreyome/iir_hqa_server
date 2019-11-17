@@ -7,6 +7,14 @@ class RequestQA():
         self.answer_num = int(self.json_req['answer_num'])
         self.algo_version = int(self.json_req['algo_version'])
 
+class RequestMultiMRC():
+    def __init__(self,json_req):
+        self.json_req = json_req
+        self.parse()
+    def parse(self):
+        self.mrc_input =self.json_req['mrc_input']
+        self.answer_num = int(self.json_req['answer_num'])
+        self.algo_version = int(self.json_req['algo_version'])
 
 
 def check_input_format(mrc_input,type_name):
