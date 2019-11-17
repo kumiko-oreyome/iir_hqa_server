@@ -13,7 +13,7 @@ def create_bp(app):
         response = {'question':req.question,'algo_version':req.algo_version}
         fake_paragraphs = ['你怎麼不問神奇海螺','發大財','國家機器動得很勤勞']
         for i in range(req.answer_num):
-            if i > 3:
+            if i >= 3:
                 paragraph = '段落%d:\n 你要的還真多,貪心的人,我沒梗了'%(i+1)
             else:
                 paragraph = fake_paragraphs[i]
