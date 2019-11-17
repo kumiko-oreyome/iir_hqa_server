@@ -1,13 +1,24 @@
 from flask import Flask
-
+from qa_mrc.dataloader.dureader import  DureaderRawExample
 #paragraphs.append({'paragraph':paragraph,'answer':paragraph[0:2],'title':'這是標題[%d]拉哈哈'%(i+1),'url':'https://www.google.com.tw'})
+
+
+
 
 
 class MockMRCModel():
     def __init__(self):
         pass
     def get_answer_list(self,mrc_input,k=3):
-        pass
+        x = DureaderRawExample(mrc_input)
+        l = x.flatten(['question'],['url','title'])
+        l = l [0:k]
+        for x in l:
+            if len( x['passage'])>10:
+                x['answer'] = x['passage'][10:20]
+            else:
+                x['answer'] = x['passage'][0:10]
+        return l
 
 
 def create_app(config):

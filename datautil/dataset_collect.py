@@ -38,6 +38,8 @@ def follow_gs_link_to_json(gs_request,link_req_cls,docs,sleep_time=None,k=None):
             article_page = req.send()
             time.sleep(sleep_time)
         article =   article_page.to_json()
+        if article["body"] is None:
+            continue
         article.update({'doc_id':len(docs['documents']),'url':link})
         docs['documents'].append(article)
         docs['doc2_answers'].append([])

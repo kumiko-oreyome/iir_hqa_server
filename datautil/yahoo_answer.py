@@ -12,7 +12,10 @@ class YahooAnswerQuestionPage():
         ele = self.tree.xpath("//h1[contains(@class,'Question__title___')]")[0]
         return ele.text
     def get_body(self):
-        body_ele = self.tree.xpath("//div[contains(@id,'qnaContainer-')]")[0]
+        body_ele = self.tree.xpath("//div[contains(@id,'qnaContainer-')]")
+        if body_ele is None:
+            return None
+        body_ele = body_ele[0]
         return html.tostring(body_ele,pretty_print=True).decode()
     def to_json(self):
         return {'body':self.get_body(),'title':self.get_title()}

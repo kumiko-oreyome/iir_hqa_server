@@ -2,6 +2,22 @@ import json
 
 from lxml import etree,html
 
+class SimpleParagraphTransform():
+    def __init__(self):
+        pass
+    def transform(self,sample_json):
+        for doc in sample_json["documents"]:
+            paragraphs = get_article_paragraphs_by_p_tags( doc)
+            if len(paragraphs) == 0:
+                paragraphs = get_article_paragraphs( doc)
+            if len(paragraphs) == 0:
+                print(doc['title'])
+                print('%s paragraph length = 0\n url=%s'%(doc['title'],doc['url']))
+                doc['paragraphs'] = '' 
+                continue
+            doc['paragraphs'] = paragraphs
+
+
 def jsonl_reader(path):
     with open(path,'r',encoding='utf-8') as f:
         for line in f :
@@ -21,13 +37,44 @@ def remove_whilte_space(data):
 #    if text.startsw
 
 ##方法一: n個字就變成一段
-def get_article_paragraphs(html_content):
+def get_article_paragraphs(documnent):
+    if 'yahoo' in documnent["url"]:
+        return get_article_paragraphs_commonhealth(documnent['body'])
+    elif 'commonhealth' in documnent["url"]:
+        return get_article_paragraphs_commonhealth(documnent['body'])
+    else:
+        assert False
+
+def get_article_paragraphs_by_p_tags(documnent):
+    if 'yahoo' in documnent["url"]:
+        return get_article_paragraphs_by_p_tags_commonhealth(documnent['body'])
+    elif 'commonhealth' in documnent["url"]:
+        return get_article_paragraphs_by_p_tags_commonhealth(documnent['body'])
+    else:
+        assert False
+
+def get_article_paragraphs_commonhealth(html_content):
     max_char_num = 400
     parser = etree.HTMLParser(remove_blank_text=True)
     tree = etree.HTML(html_content,parser)
     for bad in tree.xpath("//div/script"):
         bad.getparent().remove(bad)
-    text_content = tree.xpath("//div[@class='essay']//text()")
+    text_content = tree.xpath("//text()")
+    return _get_article_paragraphs(text_content,max_char_num)
+
+
+def get_article_paragraphs_yahoo(html_content):
+    max_char_num = 400
+    parser = etree.HTMLParser(remove_blank_text=True)
+    tree = etree.HTML(html_content,parser)
+    for bad in tree.xpath("//div/script"):
+        bad.getparent().remove(bad)
+    text_content = tree.xpath("//text()")
+    return _get_article_paragraphs(text_content,max_char_num)
+
+
+
+def _get_article_paragraphs(text_content,max_char_num):
     text_content = list(map(lambda  x: x.rstrip().lstrip(),text_content))
     text_content = list(filter(lambda  x: len(x)>0,text_content))
     paragraphs = []
@@ -44,15 +91,26 @@ def get_article_paragraphs(html_content):
         paragraphs.append(current_paragraph)
     return paragraphs
 
-
-##方法一: n個字就變成一段
-def get_article_paragraphs_by_p_tags(html_content):
+def get_article_paragraphs_by_p_tags_commonhealth(html_content):
     max_char_num = 450
     parser = etree.HTMLParser(remove_blank_text=True)
     tree = etree.HTML(html_content,parser)
     for bad in tree.xpath("//div/script"):
         bad.getparent().remove(bad)
-    pnodes = tree.xpath("//div[@class='essay']//p")
+    pnodes = tree.xpath("//p")
+    return _get_article_paragraphs_by_p_tags(pnodes,max_char_num)
+
+def get_article_paragraphs_by_p_tags_yahoo(html_content):
+    max_char_num = 450
+    parser = etree.HTMLParser(remove_blank_text=True)
+    tree = etree.HTML(html_content,parser)
+    for bad in tree.xpath("//div/script"):
+        bad.getparent().remove(bad)
+    pnodes = tree.xpath("//p")
+    return _get_article_paragraphs_by_p_tags(pnodes,max_char_num)
+
+
+def _get_article_paragraphs_by_p_tags(pnodes,max_char_num):
     paragraphs = []
     current_paragraph  = ''
     for p in pnodes:
@@ -65,11 +123,6 @@ def get_article_paragraphs_by_p_tags(html_content):
     if len(current_paragraph)>0:
         paragraphs.append(current_paragraph)
     return paragraphs
-
-
-def preprocessing_paragraphs_yahoo():
-    pass
-
         
 
 
