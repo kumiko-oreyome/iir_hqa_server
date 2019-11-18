@@ -2,3 +2,4 @@
 [submodule "qa_mrc"]
 	path = qa_mrc
 	url = https://github.com/kumiko-oreyome/qa_mrc.git
+	branch = jointly_learn
