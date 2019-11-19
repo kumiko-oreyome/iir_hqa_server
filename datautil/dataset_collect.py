@@ -25,6 +25,10 @@ class Query():
 
 
 
+    
+
+
+
 def follow_gs_link_to_json(gs_request,link_req_cls,docs,sleep_time=None,k=None):
     page = gs_request.async_send()
     if k is None:

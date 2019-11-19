@@ -3,7 +3,6 @@ import re
 
 from .util import Downloader
 from urllib.parse import quote
-from googlesearch import search
 import asyncio
 from pyppeteer import launch
 

@@ -6,18 +6,16 @@ def create_app(config):
     app.config.from_mapping(
         SECRET_KEY='key'
     )
-    for k,v in config.items():
-        app.config[k] = v
     import api_view
     import asyncio
     loop = asyncio.get_event_loop()
-    app.register_blueprint(api_view.create_bp(app))
+    app.register_blueprint(api_view.create_bp(app,loop,config))
     return app
 
 
 
 
 if __name__ == '__main__':
-    CONFIG = {}
-    app = create_app(CONFIG )
-    app.run(debug=True)
+    import  qa_server_config 
+    app = create_app(qa_server_config.MODEL_CONFIG)
+    app.run(debug=False)

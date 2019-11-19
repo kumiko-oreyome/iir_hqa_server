@@ -27,7 +27,8 @@ def check_input_format(mrc_input,type_name):
             assert ('body' in doc) and ('title' in doc) and ('url' in doc)
             if type_name == 'multi_mrc':
                 assert 'paragraphs' in doc
-    except AssertionError:
+    except AssertionError as e:
+        print(str(e))
         return False
 
     return True

@@ -1,5 +1,5 @@
 import util
-from qa_mrc.common.util import jsonl_reader
+from common.util import jsonl_reader
 
 
 def test_check_format():
@@ -23,7 +23,7 @@ def test_mrc_model():
 
 def test_mock_mrc_server():
     from mrc_server import create_app
-    from qa_mrc.ranker import RankerFactory
+    from qa.ranker import RankerFactory
     from preprocessing import  SimpleParagraphTransform
     test_data = next(jsonl_reader('./data/test/test_mrc.jsonl'))
     test_config = {'model_type':'mock'}
@@ -51,5 +51,35 @@ def test_mrc_server():
     json_data = rv.get_json()
     print(json_data)
 
-test_mrc_server()
+
+def test_qa_server():
+    from qa_server import create_app
+    config = {'multi_mrc':{'class':'TestMrcApp','kwargs':{'config':{'model_type':'mock'} } }}
+    #config = {'multi_mrc':{'class':'TestMrcApp','kwargs':{'config':{'model_type':'pipeline','device':'cpu',\
+    #    'ranker_config_path':'./data/model/pointwise/answer_doc/config.json','reader_config_path':'./data/model/reader/bert_default/config.json'}} }}
+    print('create app')
+    app = create_app(config)
+    print('send data')
+    with app.test_client() as c:
+        rv = c.post('/api/webqa', json={'question':'糖尿病適合吃什麼?','answer_num':3,'algo_version':0})
+    print(rv.get_json())
+
+def test_qa_server_by_redirect():
+    from qa_server import create_app
+    #config = {'document_retrieval':{'class':'FakeRetriever','kwargs':{}},'multi_mrc':{'class':'RedirectMrcModel','kwargs':{'server_url':'http://localhost:5000/qa' } }}
+    config = {'document_retrieval':{'class':'GoogleSearchRetriever','kwargs':{'site_url':'https://www.commonhealth.com.tw/article','k':5}},'multi_mrc':{'class':'RedirectMrcModel','kwargs':{'server_url':'http://localhost:5000/qa' } }}
+    #config = {'multi_mrc':{'class':'TestMrcApp','kwargs':{'config':{'model_type':'pipeline','device':'cpu',\
+    #    'ranker_config_path':'./data/model/pointwise/answer_doc/config.json','reader_config_path':'./data/model/reader/bert_default/config.json'}} }}
+    print('create app')
+    app = create_app(config)
+    print('send data')
+    with app.test_client() as c:
+        rv = c.post('/api/webqa', json={'question':'糖尿病適合吃什麼?','answer_num':3,'algo_version':0})
+    print(rv.get_json())
+
+
+#test_mock_mrc_server()
+#test_mrc_server()
+#test_qa_server()
+test_qa_server_by_redirect()
 

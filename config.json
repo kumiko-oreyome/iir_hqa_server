@@ -1,3 +1,4 @@
-{'ranker_'
-
+{
+"document_retriever":{"class":"","kwargs":{}},
+"multi_mrc_model":{"class":"","kwargs":{}}
 }

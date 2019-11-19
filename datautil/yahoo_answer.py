@@ -21,8 +21,9 @@ class YahooAnswerQuestionPage():
         return {'body':self.get_body(),'title':self.get_title()}
 
 class YahooAnswerQuestionRequest():
-    def __init__(self,url):
+    def __init__(self,url,event_loop=None):
         self.url = url
+        self.event_loop = event_loop
        
     def send(self):
         html = Downloader().get(self.url)
@@ -47,8 +48,9 @@ class YahooAnswerQuestionRequest():
     #    return page
 
     def async_send(self):
-        loop = asyncio.get_event_loop()
-        page = loop.run_until_complete(self._async_send())
+        if self.event_loop is None:
+            self.event_loop = asyncio.get_event_loop()
+        page = self.event_loop.run_until_complete(self._async_send())
         return page
         
 
