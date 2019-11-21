@@ -126,7 +126,21 @@ def _get_article_paragraphs_by_p_tags(pnodes,max_char_num):
         paragraphs.append(current_paragraph)
     return paragraphs
         
+def transform_collected_data_dureader(src_path,out_path):
+    json_list = []
+    para_preprocessing = SimpleParagraphTransform()
+    for sample_json in jsonl_reader(SRC_PATH):
+        print('question %s'%(sample_json['question']))
+        para_preprocessing.transform(sample_json)
+        sample_json["question_id"] = sample_json["qid"]
+        del sample_json["qid"]
+        json_list.append(sample_json)
 
+    with open(OUT_PATH,'w',encoding='utf-8') as f:
+        for x in json_list:
+            o = json.dumps(x,ensure_ascii=False)
+            f.write(o+'\n')
+            
 
 if __name__ == '__main__':
     #SRC_PATH = './python_crawler/annotation_server/data/common_health/chiu_question.jsonl'
