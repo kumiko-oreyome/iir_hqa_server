@@ -18,4 +18,4 @@ def create_app(config):
 if __name__ == '__main__':
     import  qa_server_config 
     app = create_app(qa_server_config.MODEL_CONFIG)
-    app.run(debug=False)
+    app.run(debug=False,threaded=True)

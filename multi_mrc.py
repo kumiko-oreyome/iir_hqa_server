@@ -3,6 +3,7 @@ from common.util import RecordGrouper,group_dict_list
 from qa.judger import TopKJudger
 from qa.ranker import RankerFactory
 from qa.reader import ReaderFactory
+from qa.para_select import ParagraphSelectorFactory
 from common.util import get_default_device
 import httpx
 
@@ -47,10 +48,33 @@ class RankerReaderModel():
         return ret
 
 
+class SelectorReaderModel():
+    def __init__(self,selector,reader):
+        self.selector = selector
+        self.reader = reader
+    
+    def get_answer_list(self,mrc_input,k=3):
+        mrc_input['id'] = 0
+        x = DureaderRawExample(mrc_input)
+        records = x.flatten(['question','id'],['url','title'])
+        ranked_records  = self.selector.evaluate_scores(records)
+        selected_records  = self.selector.select_top_k_each_doc(ranked_records) 
+        reader_results = self.reader.evaluate_on_records(selected_records,batch_size=128)
+        reader_results = group_dict_list(reader_results,'id')
+        ret_list= TopKJudger(k=k).judge(reader_results)[0]
+        ret = []
+        for x in ret_list:
+            ret.append({'paragraph':x['passage'],'answer':x['span'],'title':x['title'],'url':x['url']})
+        return ret
+
+
+
 def multi_doc_model_factory(config):
     if config['model_type'] == 'mock':
         return MockMRCModel()
     elif config['model_type'] == 'pipeline':
+        name2cls = {'RankerReaderModel':RankerReaderModel,'SelectorReaderModel':SelectorReaderModel}
+        _cls = name2cls[config['class']]
         if 'device' in config:
             import torch
             device = config['device']
@@ -58,17 +82,28 @@ def multi_doc_model_factory(config):
                 device = torch.device('cpu')
             else:
                 device =  get_default_device()
-        ranker = RankerFactory.from_config_path(config['ranker_config_path'])
-        reader = ReaderFactory.from_config_path(config['reader_config_path'])
-        try:
-            ranker.model = ranker.model.to(device)
-        except:
-            pass
-        try:
-            reader.model = reader.model.to(device)
-        except:
-            pass
-        return RankerReaderModel(ranker,reader)
+        
+        run_time_kwargs = {}
+        if 'ranker_config_path' in config:
+            ranker = RankerFactory.from_config_path(config['ranker_config_path'])
+            run_time_kwargs['ranker'] = ranker
+            try:
+                ranker.model = ranker.model.to(device)
+            except:
+                pass
+        if 'reader_config_path' in config:
+            reader = ReaderFactory.from_config_path(config['reader_config_path'])
+            run_time_kwargs['reader'] = ReaderFactory.from_config_path(config['reader_config_path'])
+            try:
+                reader.model = reader.model.to(device)
+            except:
+                pass
+        if 'selector' in config :
+            run_time_kwargs['selector'] = ParagraphSelectorFactory.create_selector(config['selector'])
+        kwargs = config['kwargs']
+        kwargs.update(run_time_kwargs)
+        
+        return _cls(**kwargs)
 
 
 
@@ -93,5 +128,4 @@ class RedirectMrcModel():
             traceback.print_exc()
             print('some error occur while redirect to mrc server %s'%(self.server_url))
             return {'result':'failed','message':'some error occur while redirect'}
-        print(r)
         return r.json()

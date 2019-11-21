@@ -54,9 +54,12 @@ def test_mrc_server():
 
 def test_qa_server():
     from qa_server import create_app
-    config = {'multi_mrc':{'class':'TestMrcApp','kwargs':{'config':{'model_type':'mock'} } }}
+    #config = {'multi_mrc':{'class':'TestMrcApp','kwargs':{'config':{'model_type':'mock'} } }}
     #config = {'multi_mrc':{'class':'TestMrcApp','kwargs':{'config':{'model_type':'pipeline','device':'cpu',\
-    #    'ranker_config_path':'./data/model/pointwise/answer_doc/config.json','reader_config_path':'./data/model/reader/bert_default/config.json'}} }}
+    #    'ranker_config_path':'./data/model/pointwise/answer_doc/config.json','reader_config_path':'./data/model/reader/bert_default/config.json','kwargs':{}}} }}
+    #config ={'document_retrieval':{'class':'FakeRetriever','kwargs':{}},'multi_mrc':{'class':'TestMrcApp','kwargs':{'config':{'model_type':'pipeline','device':'cpu','class':'SelectorReaderModel',\
+    #   'reader_config_path':'./data/model/reader/bert_default/config.json','selector': {'class':'bert_ranker','kwargs':{'ranker':'./data/model/pointwise/answer_doc/config.json','k':2}},'kwargs':{} }}}}
+
     print('create app')
     app = create_app(config)
     print('send data')
@@ -80,6 +83,6 @@ def test_qa_server_by_redirect():
 
 #test_mock_mrc_server()
 #test_mrc_server()
-#test_qa_server()
-test_qa_server_by_redirect()
+test_qa_server()
+#test_qa_server_by_redirect()
 

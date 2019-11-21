@@ -34,4 +34,4 @@ def create_app(config):
 if __name__ == '__main__':
     import  mrc_server_config 
     app = create_app( mrc_server_config.MODEL_CONFIG)
-    app.run(debug=False, port=mrc_server_config.PORT)
+    app.run(debug=False, port=mrc_server_config.PORT,threaded=True)

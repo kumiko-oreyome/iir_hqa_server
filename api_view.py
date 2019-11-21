@@ -2,9 +2,11 @@ from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for,Markup,jsonify
 )
 from util import  RequestQA
+from common.util import jsonl_reader
 from multi_mrc import TestMrcApp,RedirectMrcModel
 from document_retrieval import WebRetriever,GoogleSearchRetriever,FakeRetriever
-
+from preprocessing import   SimpleParagraphTransform
+from dataloader.dureader import  DureaderRawExample
 
 
 def wrap_response(json):
@@ -58,7 +60,39 @@ def create_bp(app,event_loop,config):
         req = RequestQA(request.json)
         mrc_input = retriever.retrieve_candidates(req.question)
         response = multi_mrc_model.multi_mrc(mrc_input)
+        for answer in response['answers']:
+            start_pos = answer['paragraph'].find(answer['answer'] )
+            answer['answer_pos'] = [start_pos,start_pos+len(answer['answer'])-1]
         response.update({'question':req.question,'algo_version':req.algo_version})
+        return jsonify(wrap_response(response))
+
+
+    @bp.route('/webqa/fast',methods=['POST'])
+    def fast_qa_by_websearch():
+        from qa.para_select import WordMatchSelector
+        from random import choices 
+        print('qa_by_websearch')
+        if request.json is None:
+            return jsonify({'result':'failed','message':'request is not json'})
+        req = RequestQA(request.json)
+        keyword = '高血壓'
+        if '糖尿病' in req.question:
+            keyword = '糖尿病'
+        target_sample = None
+        for sample in jsonl_reader('./data/docs/fake_db.jsonl'):
+            if keyword in sample['question']:
+                target_sample = sample
+                break
+        assert target_sample is not None
+        SimpleParagraphTransform().transform(target_sample)
+        x = DureaderRawExample(target_sample)
+        records = x.flatten(['question','qid'],['url','title'])
+        results = WordMatchSelector(k=1).paragraph_selection(records)
+        results = choices(results,k=2) 
+        response  = {'question':req.question,'algo_version':req.algo_version,'answers':[]}
+        for x in results:
+            end_pos = min(30,len(x['passage']))
+            response['answers'].append({'paragraph':x['passage'],'answer':x['passage'][0:end_pos],'answer_pos':[0,end_pos-1],'title':x['title'],'url':x['url']})
         return jsonify(wrap_response(response))
 
     return bp

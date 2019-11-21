@@ -154,15 +154,17 @@ if __name__ == '__main__':
     #collect_dataset_by_question_file(CHIU_QUESTION_FILE,CHIU_QUESTION_YAHOO_JSONL_DB_FILE,'yahoo_answer')
     #collect_yahoo_answer_by_query('我平常飲食都吃很多蔬菜，也很注意清淡少用油炸，為什麼還會得乳癌',DEBUG_JSONL_DB_YAHOO,True)
     COMMON_HEALTH_DATA_DIR = './python_crawler/annotation_server/data/common_health'
-    DEBUG_JSONL_DB = JsonlRCDatabase('%s/%s'%(COMMON_HEALTH_DATA_DIR,'debug.jsonl'),'qid')
-    DEBUG_JSONL_DB_YAHOO = JsonlRCDatabase('%s/%s'%(COMMON_HEALTH_DATA_DIR,'debug_yahoo.jsonl'),'qid')
+    #DEBUG_JSONL_DB = JsonlRCDatabase('%s/%s'%(COMMON_HEALTH_DATA_DIR,'debug.jsonl'),'qid')
+    #DEBUG_JSONL_DB_YAHOO = JsonlRCDatabase('%s/%s'%(COMMON_HEALTH_DATA_DIR,'debug_yahoo.jsonl'),'qid')
     CHIU_QUESTION_JSONL_DB_FILE = './python_crawler/annotation_server/data/common_health/chiu_question2.jsonl'
     CHIU_QUESTION_YAHOO_JSONL_DB_FILE = './python_crawler/annotation_server/data/common_health/chiu_question_yahoo.jsonl'
     CHIU_QUESTION_FILE = './python_crawler/chiu_question.txt'
 
-    with open('./python_crawler/annotation_server/data/hasaki.jsonl','w',encoding='utf-8') as f:
-        TMP_JSONL_DB = JsonlRCDatabase('./python_crawler/annotation_server/data/hasaki.jsonl','qid')
-        default_data_collect_query('適合中風者的飲食?',TMP_JSONL_DB,k=5)
+    with open('./data/docs/fake_db.jsonl','w',encoding='utf-8') as f:
+        TMP_JSONL_DB = JsonlRCDatabase('./data/docs/fake_db.jsonl','qid')
+        collect_health_news_by_query('糖尿病',TMP_JSONL_DB,k=5)
+        collect_health_news_by_query('高血壓',TMP_JSONL_DB,k=5)
+        #default_data_collect_query('適合中風者的飲食?',TMP_JSONL_DB,k=5)
         #collect_health_news_by_query('適合中風者的飲食?',TMP_JSONL_DB,k=5)
         #collect_yahoo_answer_by_query('適合中風者的飲食?',TMP_JSONL_DB,k=5)
         #collect_yahoo_answer_by_query('吃什麼可以減緩高血壓？',TMP_JSONL_DB,True)
