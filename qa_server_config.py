@@ -14,8 +14,8 @@ mock_mrc_model = {'model_type':'mock'}
 # mrc models (wrapper)
 test_mrc_app_model = {'class':'TestMrcApp','kwargs':{'config':mock_mrc_model}}
 redirect_mrc_model = {'class':'RedirectMrcModel','kwargs':{'server_url':'http://localhost:5001/qa'}}
-
-MODEL_CONFIG = {'document_retrieval':gs_retriever_cfg ,'multi_mrc':redirect_mrc_model}
+#MODEL_CONFIG = {'document_retrieval':gs_retriever_cfg ,'multi_mrc':redirect_mrc_model,'elastic_search':{'host':'192.168.99.100','port':9200}}
+MODEL_CONFIG = {'document_retrieval':gs_retriever_cfg ,'multi_mrc':redirect_mrc_model,'elastic_search':{'host':'192.168.99.100','port':9200}}
 
 
 

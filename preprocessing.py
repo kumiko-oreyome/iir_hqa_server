@@ -124,6 +124,7 @@ def _get_article_paragraphs_by_p_tags(pnodes,max_char_num):
         current_paragraph+=text
     if len(current_paragraph)>0:
         paragraphs.append(current_paragraph)
+    
     return paragraphs
         
 def transform_collected_data_dureader(src_path,out_path):

@@ -148,7 +148,11 @@ def default_data_collect_query(query_text,db,expand=False,k=5,loop=None):
         for i,doc in enumerate(new_docs):
             doc['doc_id'] = i
     db.add_new_sample(docs)
-    db.save()  
+    db.save()
+
+
+
+
 if __name__ == '__main__':
     #collect_health_news_by_query('我平常飲食都吃很多蔬菜，也很注意清淡少用油炸，為什麼還會得乳癌',DEBUG_JSONL_DB,True)
     #collect_dataset_by_question_file(CHIU_QUESTION_FILE,CHIU_QUESTION_YAHOO_JSONL_DB_FILE,'yahoo_answer')
