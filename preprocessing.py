@@ -15,7 +15,7 @@ class SimpleParagraphTransform():
             if len(paragraphs) == 0:
                 print(doc['title'])
                 print('%s paragraph length = 0\n url=%s'%(doc['title'],doc['url']))
-                doc['paragraphs'] = '' 
+                doc['paragraphs'] = [] 
                 continue
             doc['paragraphs'] = paragraphs
 

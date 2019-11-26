@@ -1,5 +1,7 @@
 import httpx
 import json
+import jieba 
+from  jieba import analyse
 
 def jsonl_reader(path):
     with open(path,'r',encoding='utf-8') as f:
@@ -39,3 +41,22 @@ class Downloader():
   
             
         return r.text
+
+
+
+class Query():
+    def __init__(self,query,word_dict=[]):
+        self.query = query
+        self.word_dict = word_dict
+
+
+    def extract_keywords(self,k=3):
+        return analyse.extract_tags(self.query,topK=3)
+
+    def extract_keywords_with_diciotnary(self):
+        keywords = []
+        for w in  self.word_dict:
+            if w in self.query:
+                keywords.append(w)
+        return keywords
+

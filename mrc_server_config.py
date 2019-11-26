@@ -2,7 +2,7 @@ pipeline_mrc_model = {'model_type':'pipeline','device':'cpu','ranker_config_path
     'reader_config_path':'./data/model/reader/bert_default/config.json','kwargs':{}}
 
 pipeline_mrc_model2 = {'model_type':'pipeline','device':'cpu','class':'SelectorReaderModel',\
-       'reader_config_path':'./data/model/reader/bert_default/config.json','selector': {'class':'bert_ranker','kwargs':{'ranker':'./data/model/pointwise/answer_doc/config.json','k':2}},'kwargs':{} }
+       'reader_config_path':'./data/model/reader/bert_default/config.json','selector': {'class':'bert_ranker','kwargs':{'ranker':'./data/model/pointwise/answer_doc/config.json','k':1}},'kwargs':{} }
 
 mock_mrc_model = {'model_type':'mock'}
 

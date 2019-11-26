@@ -4,7 +4,7 @@ from datautil.yahoo_answer import YahooAnswerQuestionRequest
 from preprocessing import   SimpleParagraphTransform
 from datautil.google_search import GoogleSearchRequest
 from datautil.common_health import  HealthArticleRequest
-
+from datautil.util import Query
 
 class WebRetriever():
     def __init__(self):
@@ -21,6 +21,37 @@ class FakeRetriever():
        return {'question':'幫我發大決 冰鳥','documents':[{'body':"12345678",'title':'title1','url':'url1','paragraphs':['1234','5678']},\
               {'body':"abcdefghhjj",'title':'abde','url':'url2','paragraphs':['1234','5678']}]}
 
+
+class CMKBElasticSearchRetriever():
+    def __init__(self,es_db,k,word_dict):
+        self.k = k
+        self.es_db = es_db
+        self.word_dict = word_dict
+    def search_elk(self,question):
+        query = Query(question,word_dict=self.word_dict)
+        dic_keywords =query.extract_keywords_with_diciotnary()
+        keywords  = list(set(dic_keywords+query.extract_keywords()))
+        docs = self.es_db.retrieve_library_doc(keywords,size=self.k)
+        # filter paragraphs without one of keywords
+        for doc in docs:
+            new_paragraphs = []
+            for p in doc['paragraphs']:
+                for dw in dic_keywords:
+                    if dw in p:
+                        new_paragraphs.append(p)
+                        break
+            doc['paragraphs'] = new_paragraphs
+        return docs
+
+    def retrieve_candidates(self,question):
+        docs = self.search_elk(question)
+        print('retrieve %d docs'%(len(docs)))
+        sample_json = {"documents":[],'question':question}
+        for i,x in enumerate(docs[0:self.k]):
+            o = {'title':x['title'],'url':x['url'],'body':x['body'],'paragraphs':x['paragraphs']}
+            sample_json['documents'].append(o)
+        return sample_json
+        
 
 
 

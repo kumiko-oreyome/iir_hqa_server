@@ -78,7 +78,7 @@ def clear_duplicate_doc(filepath):
 def remove_white_spaces(texts):
     import re
     texts = list(map(lambda  x: x.rstrip().lstrip(),texts))
-    texts = list(map(lambda  x: re.sub("[\n\t]","",x),texts))
+    texts = list(map(lambda  x: re.sub("[\n\t\r]","",x),texts))
     texts = list(filter(lambda  x: len(x)>0,texts))
     return texts
 
@@ -299,19 +299,18 @@ class CMKBElasticDB():
         status,_ = bulk(self.es,actions)
         print("delete")
         print(status)
-        
-
-
-    def retrieve_library_doc(self,keywords):
+    #TODO
+    # size bug in update_from_dict... size not working
+    def retrieve_library_doc(self,keywords,size=10,search_fields=["title^3","tags^3","paragraphs"]):
         if type(keywords) == str:
             keywords = [keywords]
         query = " ".join(keywords)
         s = Search(index=self.index).using(self.es)
-        s.update_from_dict({"query": {"simple_query_string" : {"fields" : ["title","tags"],"query" :query}}})
+        s.update_from_dict({"query": {"simple_query_string" : {"fields" : search_fields,"query" :query}}})
         res = s.execute()
         l = []
         for d in res.hits:
-            l.append(CMKBDLibraryDocument(url=d.url,title=d.title,body=d.body,tags=d.tags,paragraphs=d.paragraphs).to_json())
+            l.append(CMKBDLibraryDocument(url=d.url,title=d.title,body=d.body,tags=d.tags,paragraphs=[ s for s in d.paragraphs]).to_json())
         return l
         
     def get_results(self,res):
@@ -344,7 +343,7 @@ if __name__ == '__main__':
     #req = CMKBRequest(loop)
     #req.crawl_keyword_search_page('高血壓',100,'./hasaki2.jsonl')
     #clear_duplicate_doc('./data/kb_2_disease_dataset.jsonl')
-    build_elastic_cmkb_lib_from_file('192.168.99.100',9200,'dev','library','./data/kb_2_disease_dataset.jsonl',True)
+    #build_elastic_cmkb_lib_from_file('192.168.99.100',9200,'dev','library','./data/kb_2_disease_dataset.jsonl',True)
     db = CMKBElasticDB(host='192.168.99.100',port=9200,index='dev',doc_type='library')
     res = db.retrieve_library_doc(["高血壓"])
     print('reteieve %d results'%(len(res)))

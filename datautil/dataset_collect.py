@@ -2,24 +2,15 @@ from .google_search import GoogleSearchRequest
 from .common_health import  HealthArticleRequest
 from .yahoo_answer import YahooAnswerQuestionRequest
 from .db import JsonlRCDatabase
+from .util import Query
 import time
 import random
-import jieba 
-from  jieba import analyse
 
 
 YAHOO_ANSWER_SITE_URL = 'https://tw.answers.yahoo.com'
 COMMON_HEALTH_SITE_URL  = 'https://www.commonhealth.com.tw/article'
 
 
-
-
-
-class Query():
-    def __init__(self,query):
-        self.query = query
-    def extract_keywords(self,k=3):
-        return analyse.textrank(self.query,topK=3)
     
 
 

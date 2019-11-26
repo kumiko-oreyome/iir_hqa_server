@@ -122,7 +122,7 @@ class RedirectMrcModel():
         self.server_url = server_url
     def multi_mrc(self,mrc_input,answer_num=3,algo_version=0):
         try:
-            r = httpx.post(self.server_url,json={'mrc_input':mrc_input,'answer_num':answer_num,'algo_version':algo_version},timeout=60)
+            r = httpx.post(self.server_url,json={'mrc_input':mrc_input,'answer_num':answer_num,'algo_version':algo_version},timeout=120)
         except Exception as e:
             import traceback
             traceback.print_exc()

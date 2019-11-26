@@ -15,8 +15,9 @@ mock_mrc_model = {'model_type':'mock'}
 test_mrc_app_model = {'class':'TestMrcApp','kwargs':{'config':mock_mrc_model}}
 redirect_mrc_model = {'class':'RedirectMrcModel','kwargs':{'server_url':'http://localhost:5001/qa'}}
 #MODEL_CONFIG = {'document_retrieval':gs_retriever_cfg ,'multi_mrc':redirect_mrc_model,'elastic_search':{'host':'192.168.99.100','port':9200}}
-MODEL_CONFIG = {'document_retrieval':gs_retriever_cfg ,'multi_mrc':redirect_mrc_model,'elastic_search':{'host':'192.168.99.100','port':9200}}
-
+EL_CONFIG = {"host":'192.168.99.100',"port":9200,"index":'dev',"doc_type":'library'}
+KW_DICT_PATH = "./data/keyword_dict.txt"
+MODEL_CONFIG = {'document_retrieval':gs_retriever_cfg ,'multi_mrc':redirect_mrc_model,'elastic_search':{'host':'192.168.99.100','port':9200},"el_config":EL_CONFIG,"kw_dict_path":KW_DICT_PATH }
 
 
 

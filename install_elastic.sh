@@ -18,5 +18,8 @@ curl -X PUT "http://${HOST}:${PORT}/${CMDB_INDEX_NAME}/${CMDB_LIB_DOC_NAME}/_map
 			"paragraphs":{"type":"text", "analyzer": "ik_smart","search_analyzer": "ik_smart"}
         }
 }'
+# load dictionary of millions
 
+
+# dump datas to elk
 
